@@ -30,11 +30,6 @@ Docker follows a client-server architecture, where the Docker client interacts w
 
 - **Image Storage**: Docker images are stored in a local repository on the host system. They can also be pushed to and pulled from remote registries such as Docker Hub or private registries. Images are downloaded from registries when they are needed to run a container.
 
-**Diagram:**
-
-
-
-
 ### 3. Docker Compose
 
 - **Docker Compose**: Docker Compose is a tool for defining and running multi-container Docker applications. It allows you to specify the configuration of your application in a YAML file (`docker-compose.yml`) and manage multiple containers as a single application.
@@ -44,6 +39,9 @@ Docker follows a client-server architecture, where the Docker client interacts w
 - **REST API**: The Docker client communicates with the Docker daemon using a REST API. This API allows users to perform various operations on Docker objects programmatically.
 
 - **Communication Channels**: The Docker client and daemon can communicate over UNIX sockets (on Linux) or named pipes (on Windows) for local communication. They can also communicate over a network interface, allowing you to connect a Docker client to a remote Docker daemon.
+
+**Diagram:**
+
 
 ### Conclusion
 
