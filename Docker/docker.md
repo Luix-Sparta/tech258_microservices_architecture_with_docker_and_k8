@@ -346,3 +346,4 @@ docker rm 8bb23b3f74f5 -f
 
 These commands help you manage the lifecycle of your Docker containers effectively.
 
+Volume - Data to be attached like a USB
