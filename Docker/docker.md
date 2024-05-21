@@ -42,11 +42,11 @@ Docker follows a client-server architecture, where the Docker client interacts w
 
 **Diagram:**
 
+![alt text](docker_architecture_diagram.png)
 
 ### Conclusion
 
 Understanding Docker's client-server architecture and image management processes is crucial for effectively building, running, and managing Docker containers and images.
-
 
 
 
