@@ -68,7 +68,7 @@ Kubernetes is a powerful platform that has become the industry standard for cont
 
 Here is an example Kubernetes deployment configuration and a description of the corresponding deployment diagram.
 
-iii
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -88,7 +88,7 @@ spec:
         image: luir/nginxtech258:latest
         ports:
         - containerPort: 80
-iii
+```
 
 ### Key Concepts: Labels and Selectors
 
@@ -125,3 +125,109 @@ iii
 - Each pod runs on a node and has a unique IP address for internal network communication.
 
 This diagram and explanation should help clarify the Kubernetes deployment process and the role of labels and selectors in managing pods within a cluster.
+
+
+
+## Deploying Node.js App on a Single-Node Cluster
+
+### Diagram 
+
+![alt text](images/kubernetes_node_single_cluster.png)
+
+### Deploying Node.js Application
+
+To deploy a Node.js application on a single-node Kubernetes cluster, you can use a deployment YAML file (`node-deploy.yml`). This file describes the deployment configuration for your application:
+
+```yaml
+# use spaces not a tab
+
+apiVersion: apps/v1 # which api to use for deployment
+kind: Deployment # pod - service what kind of service/object you want to create
+# what would you like to call it - name the service/object
+metadata:
+  name: node-deployment # naming the deployment
+spec:
+  selector:
+    matchLabels:
+      app: node # look for this label to match with k8 service
+      # Lets create replica set of this with instances/pods
+  replicas: 3 # 3 pods
+    # template to use it's label for K8 service to launch in the browser
+  template:
+    metadata:
+      labels:
+        app: node # this label connects to
+                   #the service or any other k8 components
+  # Let's define the container spec
+    spec:
+      containers:
+      - name: node
+        image: luir/nodejs-app:latest # use the image that you built
+        ports:
+        - containerPort: 3000
+```
+
+This YAML file defines a Kubernetes deployment for the Node.js application. It specifies the number of replicas, container image, and port to expose.
+
+### Creating NodePort Service
+
+After deploying the Node.js application, you need to expose it to external traffic. You can create a NodePort service using a service YAML file (`node-service.yml`):
+
+```yaml
+# Select the type of API version and type of service/object
+apiVersion: v1
+kind: Service
+# Metadata for name
+metadata:
+  name: node-svc
+  namespace: default # You can change to the required namespace
+# Specification to include ports Selector to connect to the deployment
+spec:
+  ports:
+    - nodePort: 30001 # range is 30000-32768
+      port: 3000
+      targetPort: 3000
+
+  # Let's define the selector and label to connect to nginx deployment
+  selector:
+    app: node # This label connects this service to deployment
+
+  # Creating NodePort type of service
+  type: NodePort # Also use LoadBalancer - for local use ClusterIP
+```
+
+This YAML file creates a NodePort service named `node-svc` to expose the Node.js application. It specifies the target port and node port for accessing the application.
+
+### Deploying the Application
+
+To deploy the Node.js application and create the service, apply the YAML files using the `kubectl apply` command:
+
+```bash
+kubectl apply -f node-deploy.yml
+kubectl apply -f node-service.yml
+```
+
+Once deployed, you can access the Node.js application using the NodePort specified in the service YAML file.
+
+
+### Deleting the Application
+
+If you need to delete the Node.js application and the service, you can delete the resources defined in the YAML files using the `kubectl delete` command:
+
+```bash
+kubectl delete -f node-deploy.yml
+kubectl delete -f node-service.yml
+```
+
+This will remove the deployment and the service from your Kubernetes cluster.
+
+That's it! You've successfully deployed a Node.js application on a single-node Kubernetes cluster.
+
+
+
+
+
+
+
+
+
