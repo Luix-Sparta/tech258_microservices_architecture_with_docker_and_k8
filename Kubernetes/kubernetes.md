@@ -130,10 +130,20 @@ This diagram and explanation should help clarify the Kubernetes deployment proce
 
 ## Deploying Node.js App on a Single-Node Cluster
 
+### Overview
+This documentation outlines the steps to deploy a Node.js application on a single-node Kubernetes cluster. The deployment consists of creating a Kubernetes Deployment and a NodePort Service. Here's a high-level overview of the architecture:
+
 ### Diagram 
 
 ![alt text](images/kubernetes_node_single_cluster.png)
 
+- **Node**: The single node in your Kubernetes cluster where the application is deployed.
+- **Kubernetes Cluster**: The cluster that manages the deployment and scaling of your application.
+- **Deployment**: Defines the desired state of your application, including the number of replicas.
+- **Replica Set**: Ensures that the specified number of pod replicas are running at all times.
+- **Pods**: Instances of your application. In this example, three pods are created, each running the Node.js application with the label `app: node`.
+- **Service**: Exposes the application to external traffic. The service uses a selector to match the pods with the label `app: node` and makes the application accessible at `localhost:3000`.
+  
 ### Deploying Node.js Application
 
 To deploy a Node.js application on a single-node Kubernetes cluster, you can use a deployment YAML file (`node-deploy.yml`). This file describes the deployment configuration for your application:
