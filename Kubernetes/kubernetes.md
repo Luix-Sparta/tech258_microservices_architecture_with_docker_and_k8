@@ -63,3 +63,65 @@ Mechanisms for injecting configuration data into containers, with Secrets specif
 - **Big Data and Machine Learning:** Manages workloads for data processing and machine learning tasks efficiently.
 
 Kubernetes is a powerful platform that has become the industry standard for container orchestration, enabling organizations to deploy and manage applications at scale with greater ease and efficiency.
+
+## Kubernetes Deployment Diagram
+
+Here is an example Kubernetes deployment configuration and a description of the corresponding deployment diagram.
+
+iii
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: luir/nginxtech258:latest
+        ports:
+        - containerPort: 80
+iii
+
+### Key Concepts: Labels and Selectors
+
+1. **Labels:**
+   - Labels are key-value pairs attached to objects such as pods, services, and deployments in Kubernetes. They provide a way to organize and select subsets of objects.
+   - In the deployment YAML above, the label `app: nginx` is attached to the pod template. This label helps identify and group the pods created by this deployment.
+
+2. **Selectors:**
+   - Selectors are used to find and interact with Kubernetes objects based on their labels.
+   - The deployment's selector `matchLabels: app: nginx` ensures that the deployment manages only the pods with the label `app: nginx`.
+
+### Deployment Diagram Description
+
+1. **Kubernetes Deployment:**
+   - The deployment named `nginx-deployment` is created based on the YAML configuration. It specifies that three replicas of the pod should be running.
+
+2. **Pods:**
+   - Three pods are created by the deployment. Each pod contains a single container running the `nginx` image specified in the deployment.
+   - The pods are labeled with `app: nginx`, matching the deployment's selector.
+
+3. **Nodes:**
+   - Each pod is scheduled on a node within the Kubernetes cluster. Nodes can be physical or virtual machines.
+   - In the diagram, each pod (Pod 1, Pod 2, Pod 3) is shown with an associated IP address (e.g., 0.0.0.0, 0.0.0.1, 0.0.0.3).
+
+### Visual Diagram Description
+
+![alt text](images/kubernetes_deployment_diagram.PNG)
+
+### Explanation
+
+- The deployment "nginx-deployment" is responsible for creating and managing three replicas of the pod.
+- Each pod is labeled with `app: nginx` and contains one nginx container.
+- The deployment uses labels and selectors to ensure the correct pods are managed.
+- Each pod runs on a node and has a unique IP address for internal network communication.
+
+This diagram and explanation should help clarify the Kubernetes deployment process and the role of labels and selectors in managing pods within a cluster.
