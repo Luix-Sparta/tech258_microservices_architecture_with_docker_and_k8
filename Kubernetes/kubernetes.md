@@ -217,6 +217,11 @@ kubectl apply -f node-deploy.yml
 kubectl apply -f node-service.yml
 ```
 
+'''
+kubectl apply -f mongo-deploy.yml
+kubectl apply -f mongo-service.yml
+'''
+
 Once deployed, you can access the Node.js application using the NodePort specified in the service YAML file.
 
 
@@ -234,6 +239,145 @@ This will remove the deployment and the service from your Kubernetes cluster.
 That's it! You've successfully deployed a Node.js application on a single-node Kubernetes cluster.
 
 
+# MongoDB and Node.js Application on Kubernetes
+
+This documentation provides step-by-step instructions to deploy a MongoDB instance and a Node.js application on a Kubernetes cluster. We will create PersistentVolumeClaims, Services, and Deployments necessary for this setup.
+
+## MongoDB Setup
+
+### PersistentVolumeClaim for MongoDB
+
+A PersistentVolumeClaim (PVC) is required to store MongoDB data persistently. This YAML configuration creates a PVC that requests 256Mi of storage with ReadWriteOnce access mode.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+```
+
+### MongoDB Service
+
+A Service is needed to expose the MongoDB instance within the cluster. This service configuration maps port 27017 on the service to port 27017 on the MongoDB pod.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+```
+
+### MongoDB Deployment
+
+A Deployment is required to manage the MongoDB instance. This configuration sets up a single MongoDB pod, using the specified image and mounts the PVC to the `/data/db` directory.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: luir/mongo-db
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: storage
+              mountPath: /data/db
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: mongo-db
+```
+
+## Node.js Application Setup
+
+### Node.js Deployment
+
+A Deployment for the Node.js application that connects to the MongoDB instance. This configuration creates three replicas of the Node.js application, which connect to the MongoDB service via the `DB_HOST` environment variable.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+spec:
+  selector:
+    matchLabels:
+      app: node
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+        - name: node
+          image: luir/nodejs-app:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: mongodb://mongo:27017/posts
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+```
+
+### Node.js Service
+
+A Service to expose the Node.js application. This service configuration sets up a LoadBalancer that maps port 3000 on the service to port 3000 on the Node.js pods.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: node
+spec:
+  selector:
+    app: node
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: LoadBalancer
+```
+
+## Summary
+
+This documentation provides the YAML configurations to deploy a MongoDB instance and a Node.js application on Kubernetes. Ensure you replace image names and other configurations as per your requirements. Apply these configurations using `kubectl apply -f <filename>.yaml`.
+
+- **PersistentVolumeClaim (PVC)**: Ensures persistent storage for MongoDB.
+- **Services**: Expose both MongoDB and Node.js applications within the cluster.
+- **Deployments**: Manage and maintain the desired state of MongoDB and Node.js applications.
+
+Follow these steps to ensure a robust and scalable deployment of your MongoDB and Node.js applications on Kubernetes.
 
 
 
